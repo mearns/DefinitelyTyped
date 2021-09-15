@@ -30,4 +30,18 @@ export class RequestSigner {
     formatPath(): string;
 }
 
-export function sign(options?: any, credentials?: any): any;
+type Headers = { [header: string]: value };
+
+interface Request<H extends Headers = Headers> {
+    doNotModifyHeaders?: boolean;
+    headers: Headers;
+}
+
+interface SignedRequest<H extends Headers = Headers> extends Request<H> {
+    headers: H & {
+        Authorization: string;
+        'X-Amz-Security-Token'?: string;
+    }
+}
+
+export function sign<H extends Headers = Headers, R extends Request<H> = Request<H>>(options?: R, credentials?: any): R & SignedRequest<H>;
